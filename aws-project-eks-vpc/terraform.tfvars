@@ -10,3 +10,6 @@ enable_network_address_usage_metrics  = false
 vpc_tags = {
   "Environment" = "Development" 
 }
+
+## Secondary CIDR Blocks
+secondary_cidr_blocks = ["10.1.0.0/16", "10.2.0.0/16"]

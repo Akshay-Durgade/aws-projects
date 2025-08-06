@@ -1,3 +1,15 @@
+variable "cluster_name" {
+  description = "Name of cluster - used by Terratest for e2e test automation"
+  type        = string
+  default     = "eks-cluster-with-vpc"
+
+  validation {
+    # cluster name is used as prefix on eks_blueprint module and cannot be >25 characters
+    condition     = can(regex("^[a-zA-Z][-a-zA-Z0-9]{3,24}$", var.cluster_name))
+    error_message = "Cluster name is used as a prefix-name for other resources. Max size is 25 chars and must satisfy regular expression pattern: '[a-zA-Z][-a-zA-Z0-9]{3,19}'."
+  }
+}
+
 ################################################################################
 # VPC
 ################################################################################
@@ -108,4 +120,22 @@ variable "name" {
   description = "Name to be used on all the resources as identifier"
   type        = string
   default     = ""
+}
+
+################################################################################
+# Secondary CIDR Blocks
+################################################################################
+variable "secondary_cidr_blocks" {
+  description = "List of secondary CIDR blocks to associate with the VPC"
+  type        = list(string)
+  default     = []
+}
+
+################################################################################
+# Block Public Access Options to VPC
+################################################################################
+variable "vpc_block_public_access_options" {
+  description = "A map of VPC block public access options"
+  type        = map(string)
+  default     = {}
 }
