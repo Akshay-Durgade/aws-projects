@@ -139,3 +139,104 @@ variable "vpc_block_public_access_options" {
   type        = map(string)
   default     = {}
 }
+
+variable "public_dedicated_network_acl" {
+  description = "Whether to use dedicated network ACL (not default) and custom rules for public subnets"
+  type        = bool
+  default     = false
+}
+
+variable "public_inbound_acl_rules" {
+  description = "Public subnets inbound network ACLs"
+  type        = list(map(string))
+  default = [
+    {
+      rule_number = 100
+      rule_action = "allow"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_block  = "0.0.0.0/0"
+    },
+  ]
+}
+
+################################################################################
+# Internet Gateway
+################################################################################
+
+variable "create_igw" {
+  description = "Controls if an Internet Gateway is created for public subnets and the related routes that connect them"
+  type        = bool
+  default     = true
+}
+
+variable "create_egress_only_igw" {
+  description = "Controls if an Egress Only Internet Gateway is created and its related routes"
+  type        = bool
+  default     = true
+}
+
+variable "igw_tags" {
+  description = "Additional tags for the internet gateway"
+  type        = map(string)
+  default     = {}
+}
+
+################################################################################
+# NAT Gateway
+################################################################################
+
+variable "enable_nat_gateway" {
+  description = "Should be true if you want to provision NAT Gateways for each of your private networks"
+  type        = bool
+  default     = false
+}
+
+variable "nat_gateway_destination_cidr_block" {
+  description = "Used to pass a custom destination route for private NAT Gateway. If not specified, the default 0.0.0.0/0 is used as a destination route"
+  type        = string
+  default     = "0.0.0.0/0"
+}
+
+variable "single_nat_gateway" {
+  description = "Should be true if you want to provision a single shared NAT Gateway across all of your private networks"
+  type        = bool
+  default     = false
+}
+
+variable "one_nat_gateway_per_az" {
+  description = "Should be true if you want only one NAT Gateway per availability zone. Requires `var.azs` to be set, and the number of `public_subnets` created to be greater than or equal to the number of availability zones specified in `var.azs`"
+  type        = bool
+  default     = false
+}
+
+variable "reuse_nat_ips" {
+  description = "Should be true if you don't want EIPs to be created for your NAT Gateways and will instead pass them in via the 'external_nat_ip_ids' variable"
+  type        = bool
+  default     = false
+}
+
+variable "external_nat_ip_ids" {
+  description = "List of EIP IDs to be assigned to the NAT Gateways (used in combination with reuse_nat_ips)"
+  type        = list(string)
+  default     = []
+}
+
+variable "external_nat_ips" {
+  description = "List of EIPs to be used for `nat_public_ips` output (used in combination with reuse_nat_ips and external_nat_ip_ids)"
+  type        = list(string)
+  default     = []
+}
+
+variable "nat_gateway_tags" {
+  description = "Additional tags for the NAT gateways"
+  type        = map(string)
+  default     = {}
+}
+
+variable "nat_eip_tags" {
+  description = "Additional tags for the NAT EIP"
+  type        = map(string)
+  default     = {}
+}

@@ -41,17 +41,21 @@ module "vpc" {
   public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)]
   private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 10)]
 
-  enable_nat_gateway   = true
+  enable_nat_gateway   = false
   single_nat_gateway   = true
   # enable_dns_hostnames = true
 
   # Manage so we can name
-  # manage_default_network_acl    = true
-  # default_network_acl_tags      = { Name = "${local.name}-default" }
-  # manage_default_route_table    = true
-  # default_route_table_tags      = { Name = "${local.name}-default" }
-  # manage_default_security_group = true
-  # default_security_group_tags   = { Name = "${local.name}-default" }
+  manage_default_network_acl    = true
+  default_network_acl_tags      = { Name = "${local.name}-default" }
+  manage_default_route_table    = true
+  default_route_table_tags      = { Name = "${local.name}-default" }
+  manage_default_security_group = true
+  default_security_group_tags   = { Name = "${local.name}-default" }
+
+  public_dedicated_network_acl = true
+  create_igw                   = false
+  public_inbound_acl_rules = var.public_inbound_acl_rules
 
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
